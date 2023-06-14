@@ -1,0 +1,9 @@
+/**
+ * 
+ */
+/**
+ * @author arunk
+ *
+ */
+module coreproject {
+}
