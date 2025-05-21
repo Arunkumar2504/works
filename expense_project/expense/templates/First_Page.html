@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker</title>
+</head>
+<body>
+    <h1>💰 Expense Tracker</h1>
+    <ul id="expense-list"></ul>
+
+    <script>
+        // Fetch expenses from the API and display them
+        fetch('/api/expenses/')
+        .then(response => response.json())
+        .then(data => {
+            const list = document.getElementById('expense-list');
+            data.forEach(expense => {
+                const li = document.createElement('li');
+                li.textContent = `${expense.tittle} - ₹${expense.amount} (${expense.category}) on ${expense.date}`;
+                list.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>

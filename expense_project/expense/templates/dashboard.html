@@ -1,0 +1,116 @@
+{% load form_tags %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Expense Dashboard</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <link href="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.css" rel="stylesheet" />
+        <script src="https://unpkg.com/flowbite@1.6.5/dist/flowbite.min.js"></script>    </head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-3xl font-bold mb-6 text-center">Expense Tracker Dashboard</h1>
+
+        <!-- Form Section -->
+        <form method="POST" class="mb-8 space-y-4">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- Title -->
+                <div>
+                    <label class="block font-semibold mb-1" for="id_title">Title</label>
+                    {{ form.tittle|add_class:"w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+
+                    {% if form.title.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ form.tittle.errors.0 }}</p>
+                    {% endif %}
+
+                </div>
+
+                <!-- Amount -->
+                <div>
+                    <label class="block font-semibold mb-1" for="id_amount">Amount</label>
+                    {{ form.amount|add_class:"w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                    {% if form.amount.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.amount.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block font-semibold mb-1" for="id_category">Category</label>
+                    {{ form.category|add_class:"w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                    {% if form.category.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Date -->
+                <div>
+                    <label for="datepicker" class="block font-semibold mb-1">Date</label>
+                    <input type="text" id="datepicker" name="date"
+                           value="{{ form.initial.date|default:'' }}"
+                           class="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="Select a date" />
+                    {% if form.date.errors %}
+                        <p class="text-red-600 text-sm mt-1">{{ form.date.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <button type="submit" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+                {% if edit_id %} Update Expense {% else %} Add Expense {% endif %}
+            </button>
+        </form>
+
+        <!-- Total Amount Display -->
+        <div class="text-right font-bold text-lg mb-4">
+            Total: ₹ {{ total }}
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-200 text-left">
+                        <th class="border border-gray-300 px-4 py-2">Title</th>
+                        <th class="border border-gray-300 px-4 py-2">Amount</th>
+                        <th class="border border-gray-300 px-4 py-2">Category</th>
+                        <th class="border border-gray-300 px-4 py-2">Date</th>
+                        <th class="border border-gray-300 px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for expense in expenses %}
+                    <tr class="hover:bg-gray-100">
+                        <td class="border border-gray-300 px-4 py-2">{{ expense.tittle }}</td>
+                        <td class="border border-gray-300 px-4 py-2">₹ {{ expense.amount }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ expense.category }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ expense.date }}</td>
+                        <td class="border border-gray-300 px-4 py-2 space-x-2">
+                            <a href="{% url 'expense-dashboard-edit' expense.pk %}" class="text-blue-600 hover:underline">Edit</a>
+                            <a href="{% url 'delete_expense' expense.pk %}" class="text-red-600 hover:underline"
+                               onclick="return confirm('Are you sure you want to delete this expense?');">Delete</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center p-4 text-gray-500">No expenses found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
+<script>
+    flatpickr("#datepicker", {
+        dateFormat: "Y-m-d",
+        allowInput: false
+    });
+</script>
